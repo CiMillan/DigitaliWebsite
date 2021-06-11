@@ -42,7 +42,7 @@ st.write(TITLE_FONT_SIZE_CSS, unsafe_allow_html=True)
 # SIDEBAR RADIO MOVIES OR SERIES
 #---------------------------------------------------------------#
 
-sidebar_options = st.sidebar.radio('What do you want to predict?', ('Movies', 'Series'))
+sidebar_options = st.sidebar.radio('Choose one option:', ('Get Score by Title', 'Select a Ranking range'))
 
 SIDEBAR_FONT_SIZE_CSS = f"""
 <style>
@@ -70,46 +70,30 @@ if sidebar_options == 'Get Score by Title':
     #Filter df based on selection
     movie_df = data[data['original_title'].isin(select_movie)]
 
-    # major_cluster = artist_df.groupby('clusters')['search_query'].count()\
-    #     .sort_values(ascending = False).index[0]
-    
+    #Group by IMDb ID
     one_title_df = movie_df.groupby(['imdb_title_id'],as_index=False).agg(lambda x : x.mean() if x.dtype=='int64' else x.head(1))
     first_table = one_title_df[['year', 'genre', 'duration', 'country', 'actors', 'avg_vote', 'votes',
        'budget', 'worlwide_gross_income', 'metascore',
        'reviews_from_users', 'reviews_from_critics',]]
     first_table
     
+    #Score Button for only one result vs more results
+    film1 = one_title_df['original_title'][0]
+    score1 = first_table.iloc[0 , 5]
     if len(first_table) < 2:
         if st.button('Reveal Score'):
-            st.write('Score is ...')
+            st.write(f'The predicted score for the film {film1} is {score1}')
     else:
         selected_indices = st.multiselect('Select rows:', first_table.index)
-        
         if st.button('Reveal Score'):
             for i in range (0, len(selected_indices)):
-                film = select_movie[0]
+                film2 = select_movie[0]
                 year = first_table.iloc[i , 0]
-                score = first_table.iloc[i , 5]
-                st.write(f'The predicted score for the film {film} from {year} is {score}')
-        
+                score2 = first_table.iloc[i , 5]
+                st.write(f'The predicted score for the film {film2} from {year} is {score2}')
     
-    
-    
-    # for i in range(0, len(first_table)):
-    #     cols = st.beta_columns(6)
-    #     cols[0].write(first_table['imdb_title_id'][i])
-    #     cols[1].write(first_table['year'][i])
-    #     cols[2].write(first_table['genre'][i])
-    #     cols[3].write(first_table['country'][i])
-    #     cols[4].write(first_table['duration'][i])
-    #     cols[5].write(first_table['language'][i])
-    
-    for i in range(0, ):
-        if st.button('find score'):
-            st.write('Score is ...')
-
-    
-    with st.beta_expander("Select by feature"):
+    #Expander to reveal more features of selected movie(s):
+    with st.beta_expander("Disclose features"):
     
         col1, col2, col3, col4, col5, col6 = st.beta_columns(6)
     
@@ -125,8 +109,16 @@ if sidebar_options == 'Get Score by Title':
         st.subheader("Duration")
     with col6:
         st.subheader("Language")
-        if st.button('find score'):
-            st.write('Score is ...')
+        
+    for i in range(0, len(first_table)):
+        cols = st.beta_columns(6)
+        #cols[0].write(first_table['imdb_title_id'][i])
+        cols[1].write(selected_indices['year'][i])
+        cols[2].write(first_table['genre'][i])
+        cols[3].write(first_table['country'][i])
+        cols[4].write(first_table['duration'][i])
+        #cols[5].write(first_table['language'][i])
+ 
     
     #col1, col2 = st.beta_columns(2)
     
@@ -144,21 +136,21 @@ if sidebar_options == 'Get Score by Title':
 #---------------------------------------------------------------#
     
 elif sidebar_options == 'Select a Ranking range':
-    st.write('▶️')
+    @st.cache
     
-    # sorted_movies = data.groupby('Title')['search_query'].count()\
-    #     .sort_values(ascending=False).index
+    def get_slider_data():
+        return pd.DataFrame({
+            'first column': list(range(1, 11)),
+            'second column': np.arange(10, 101, 10)
+            })
 
-    # st.markdown("### **Select Movie:**")
-    # select_movie = []
+    df = get_slider_data()
 
-    # select_movie.append(st.selectbox('', sorted_movies))
+    option = st.slider('Select the number of rows', 1, 50, 15)
 
-    # #Filter df based on selection
-    # movie_df = data[data['search_movie'].isin(select_movie)]
+    filtered_df = df[df['first column'] % option == 0]
 
-    # major_cluster = artist_df.groupby('clusters')['search_query'].count()\
-    #     .sort_values(ascending = False).index[0]
+    st.write(filtered_df)
     
 else:
     st.write('◀️')
