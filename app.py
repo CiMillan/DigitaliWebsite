@@ -57,7 +57,7 @@ st.write(SIDEBAR_FONT_SIZE_CSS, unsafe_allow_html=True)
 # DROPDOWN MOVIES
 #---------------------------------------------------------------#
     
-if sidebar_options == 'Movies':
+if sidebar_options == 'Get Score by Title':
 
     sorted_movies = data.groupby('original_title')['title'].count()\
         .sort_values(ascending=False).index
@@ -143,7 +143,7 @@ if sidebar_options == 'Movies':
 # DROPDOWN SERIES
 #---------------------------------------------------------------#
     
-elif sidebar_options == 'Series':
+elif sidebar_options == 'Select a Ranking range':
     st.write('▶️')
     
     # sorted_movies = data.groupby('Title')['search_query'].count()\
