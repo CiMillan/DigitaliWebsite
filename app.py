@@ -145,22 +145,21 @@ elif sidebar_options == 'Select a Ranking Range':
 #---------------------------------------------------------------#
     
 elif sidebar_options == 'Sort by Features':
-    #@st.cache
     
-    # def get_slider_data():
-    #     return pd.DataFrame({
-    #         'Title': list(range(1, 11)),
-    #         'Year': np.arange(10, 101, 10),
-    #         'Score': np.arange(10, 101, 10)
-    #         })
-
-    # df = get_slider_data()
-
-    option = st.slider('Select the number of rows', 1, 50, 5)
-    print(option)
-
-    #filtered_df = data[data['original_title'] % option == 0]
-    filtered_df = st.table(data[['original_title', 'year']].head(option))
+    col1, col2, col3, col4, col5, col6 = st.beta_columns(6)
+    
+    with col1:
+        st.subheader("IMDb ID")
+    with col2:
+        st.subheader("Year")
+    with col3:
+        st.subheader("Genre")
+    with col4:
+        st.subheader("Country")
+    with col5:
+        st.subheader("Duration")
+    with col6:
+        st.subheader("Language")
     
 else:
     st.write('◀️')
