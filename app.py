@@ -74,10 +74,9 @@ if sidebar_options == 'Get Score by Title':
 
     #Group by IMDb ID
     one_title_df = movie_df.groupby(['imdb_title_id'],as_index=False).agg(lambda x : x.mean() if x.dtype=='int64' else x.head(1))
-    first_table = one_title_df[['year', 'genre', 'duration', 'country', 'actors', 'avg_vote', 'votes',
-       'budget', 'worlwide_gross_income', 'metascore',
-       'reviews_from_users', 'reviews_from_critics',]]
-    first_table
+    first_table = one_title_df[['year', 'genre', 'duration', 'country', 'avg_vote', 'votes', 'worlwide_gross_income',
+       'reviews_from_users',]]
+    st.table(first_table)
     
     #Score Button for only one result vs more results
     film1 = one_title_df['original_title'][0]
@@ -86,7 +85,7 @@ if sidebar_options == 'Get Score by Title':
         if st.button('Reveal Score'):
             st.write(f'The predicted score for the film **{film1}** is **{score1}**')
     else:
-        selected_indices = st.multiselect('Select rows:', first_table.index)
+        selected_indices = st.multiselect('Select rows to compare:', first_table.index)
         if st.button('Reveal Score'):
             for i in range (0, len(selected_indices)):
                 film2 = select_movie[0]
@@ -95,7 +94,7 @@ if sidebar_options == 'Get Score by Title':
                 st.write(f'The predicted score for the film **{film2}** from {year} is **{score2}**')
     
     #Expander to reveal more features of selected movie(s)
-    with st.beta_expander("Disclose all features"):
+    with st.beta_expander("Disclose more features"):
     
         col1, col2, col3, col4, col5, col6 = st.beta_columns(6)
     
@@ -114,21 +113,21 @@ if sidebar_options == 'Get Score by Title':
         
         if len(first_table) < 2:
                 cols = st.beta_columns(6)
-                #cols[0].write(first_table['imdb_title_id'][i])
-                cols[1].write(first_table['year'][0])
-                cols[2].write(first_table['genre'][0])
-                cols[3].write(first_table['country'][0])
-                cols[4].write(first_table['duration'][0])
-                #cols[5].write(first_table['language'][i])
+                cols[0].write(one_title_df['imdb_title_id'][0])
+                cols[1].write(one_title_df['year'][0])
+                cols[2].write(one_title_df['genre'][0])
+                cols[3].write(one_title_df['country'][0])
+                cols[4].write(one_title_df['duration'][0])
+                cols[5].write(one_title_df['language'][0])
         else:  
             for i in range(0, len(selected_indices)):
                 cols = st.beta_columns(6)
-                #cols[0].write(first_table['imdb_title_id'][i])
-                cols[1].write(first_table['year'][i])
-                cols[2].write(first_table['genre'][i])
-                cols[3].write(first_table['country'][i])
-                cols[4].write(first_table['duration'][i])
-                #cols[5].write(first_table['language'][i])
+                cols[0].write(one_title_df['imdb_title_id'][i])
+                cols[1].write(one_title_df['year'][i])
+                cols[2].write(one_title_df['genre'][i])
+                cols[3].write(one_title_df['country'][i])
+                cols[4].write(one_title_df['duration'][i])
+                cols[5].write(one_title_df['language'][i])
 
 #---------------------------------------------------------------#
 # DROPDOWN RANKING RANGE
@@ -149,18 +148,47 @@ elif sidebar_options == 'Sort by Features':
     col1, col2, col3, col4, col5, col6 = st.beta_columns(6)
     
     with col1:
-        st.subheader("IMDb ID")
+        d = list(data['year'].drop_duplicates())
+        d.insert(0, "-")
+        year = st.selectbox("Year", d)
     with col2:
-        st.subheader("Year")
-    with col3:
-        st.subheader("Genre")
-    with col4:
-        st.subheader("Country")
-    with col5:
-        st.subheader("Duration")
-    with col6:
-        st.subheader("Language")
+        g = list(data['genre'].drop_duplicates())
+        g.insert(0, "-")
+        genre = st.selectbox("Genre", g)
+    # with col3:
+    #     country = st.selectbox("Country", data['country'].drop_duplicates())
+    # with col4:
+    #     avg_votes = st.selectbox("Avg Votes", data['avg_vote'].drop_duplicates().sort_values(ascending=False))
+    # with col5:
+    #     budget = st.selectbox("Budget", data['budget'].drop_duplicates().sort_values(ascending=False))
+    # with col6:
+    #     income = st.selectbox("Income", data['worlwide_gross_income'].drop_duplicates().sort_values(ascending=False))
     
+    
+    fields = ['year', 'genre']
+    inputs = [year, genre]#, country, avg_votes, budget, income]
+    
+    field_dict = {}
+    for index, input in enumerate(inputs):
+        if input != "-":
+            field_dict[fields[index]] = input
+    
+    test = data.copy()
+    
+    for key, value in field_dict.items():
+        print(key, value)
+        test = test[test[key] == value]
+    
+    if test.empty:
+        st.write('No results for your query')
+    else:
+        test        
+
+
+
+
+
+
 else:
     st.write('◀️')
     
