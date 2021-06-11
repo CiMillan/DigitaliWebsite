@@ -10,6 +10,8 @@ from PIL import Image
 #---------------------------------------------------------------#
 
 data = pd.read_csv('raw_data/linear.csv')
+#remove indexes
+data = data.assign(hack='').set_index('hack')
 
 #---------------------------------------------------------------#
 # PAGE STRUCTURE
@@ -42,7 +44,7 @@ st.write(TITLE_FONT_SIZE_CSS, unsafe_allow_html=True)
 # SIDEBAR RADIO MOVIES OR SERIES
 #---------------------------------------------------------------#
 
-sidebar_options = st.sidebar.radio('Choose one option:', ('Get Score by Title', 'Select a Ranking range'))
+sidebar_options = st.sidebar.radio('Choose one option:', ('Get Score by Title', 'Select a Ranking Range', 'Sort by Features'))
 
 SIDEBAR_FONT_SIZE_CSS = f"""
 <style>
@@ -54,7 +56,7 @@ label {{
 st.write(SIDEBAR_FONT_SIZE_CSS, unsafe_allow_html=True)
 
 #---------------------------------------------------------------#
-# DROPDOWN MOVIES
+# DROPDOWN SCORE BY TITLE
 #---------------------------------------------------------------#
     
 if sidebar_options == 'Get Score by Title':
@@ -127,24 +129,22 @@ if sidebar_options == 'Get Score by Title':
                 cols[3].write(first_table['country'][i])
                 cols[4].write(first_table['duration'][i])
                 #cols[5].write(first_table['language'][i])
- 
-    
-    #col1, col2 = st.beta_columns(2)
-    
-    #with col1:
-        #st.markdown(f"**Year:** {movie_df['year']}")
-        #st.markdown(f"**Top Song:** " +\
-                    #f"{movie_df.loc[movie_df['track_rank']==np.min(movie_df['track_rank']),'search_query'].values[0]}")
-        
-    # with col2:
-    #     st.markdown(f"**Highest Rank:** {np.min(artist_df['track_rank'])}")
-    #     st.markdown(f"**Major Cluster:** {major_cluster}")
 
 #---------------------------------------------------------------#
-# DROPDOWN SERIES
+# DROPDOWN RANKING RANGE
 #---------------------------------------------------------------#
     
-elif sidebar_options == 'Select a Ranking range':
+elif sidebar_options == 'Select a Ranking Range':
+
+    option = st.slider('Select the number of rows', 1, 50, 5)
+    print(option) #prints on the terminal
+    filtered_df = st.table(data[['original_title', 'year']].head(option))
+    
+#---------------------------------------------------------------#
+# DROPDOWN SORT FEATURES
+#---------------------------------------------------------------#
+    
+elif sidebar_options == 'Sort by Features':
     #@st.cache
     
     # def get_slider_data():
