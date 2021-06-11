@@ -20,7 +20,7 @@ st.set_page_config(
     page_title="Hit Predictor",
     page_icon="🎬",
     layout="wide",
-    initial_sidebar_state="collapsed")
+    initial_sidebar_state="auto") # or collapsed
 
 image = Image.open('Digitalilogo.jpg')
 st.sidebar.image(image)
@@ -82,7 +82,7 @@ if sidebar_options == 'Get Score by Title':
     score1 = first_table.iloc[0 , 5]
     if len(first_table) < 2:
         if st.button('Reveal Score'):
-            st.write(f'The predicted score for the film {film1} is {score1}')
+            st.write(f'The predicted score for the film **{film1}** is **{score1}**')
     else:
         selected_indices = st.multiselect('Select rows:', first_table.index)
         if st.button('Reveal Score'):
@@ -90,34 +90,43 @@ if sidebar_options == 'Get Score by Title':
                 film2 = select_movie[0]
                 year = first_table.iloc[i , 0]
                 score2 = first_table.iloc[i , 5]
-                st.write(f'The predicted score for the film {film2} from {year} is {score2}')
+                st.write(f'The predicted score for the film **{film2}** from {year} is **{score2}**')
     
-    #Expander to reveal more features of selected movie(s):
-    with st.beta_expander("Disclose features"):
+    #Expander to reveal more features of selected movie(s)
+    with st.beta_expander("Disclose all features"):
     
         col1, col2, col3, col4, col5, col6 = st.beta_columns(6)
     
-    with col1:
-        st.subheader("IMDb ID")
-    with col2:
-        st.subheader("Year")
-    with col3:
-        st.subheader("Genre")
-    with col4:
-        st.subheader("Country")
-    with col5:
-        st.subheader("Duration")
-    with col6:
-        st.subheader("Language")
+        with col1:
+            st.subheader("IMDb ID")
+        with col2:
+            st.subheader("Year")
+        with col3:
+            st.subheader("Genre")
+        with col4:
+            st.subheader("Country")
+        with col5:
+            st.subheader("Duration")
+        with col6:
+            st.subheader("Language")
         
-    for i in range(0, len(first_table)):
-        cols = st.beta_columns(6)
-        #cols[0].write(first_table['imdb_title_id'][i])
-        cols[1].write(selected_indices['year'][i])
-        cols[2].write(first_table['genre'][i])
-        cols[3].write(first_table['country'][i])
-        cols[4].write(first_table['duration'][i])
-        #cols[5].write(first_table['language'][i])
+        if len(first_table) < 2:
+                cols = st.beta_columns(6)
+                #cols[0].write(first_table['imdb_title_id'][i])
+                cols[1].write(first_table['year'][0])
+                cols[2].write(first_table['genre'][0])
+                cols[3].write(first_table['country'][0])
+                cols[4].write(first_table['duration'][0])
+                #cols[5].write(first_table['language'][i])
+        else:  
+            for i in range(0, len(selected_indices)):
+                cols = st.beta_columns(6)
+                #cols[0].write(first_table['imdb_title_id'][i])
+                cols[1].write(first_table['year'][i])
+                cols[2].write(first_table['genre'][i])
+                cols[3].write(first_table['country'][i])
+                cols[4].write(first_table['duration'][i])
+                #cols[5].write(first_table['language'][i])
  
     
     #col1, col2 = st.beta_columns(2)
