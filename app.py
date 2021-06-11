@@ -145,21 +145,22 @@ if sidebar_options == 'Get Score by Title':
 #---------------------------------------------------------------#
     
 elif sidebar_options == 'Select a Ranking range':
-    @st.cache
+    #@st.cache
     
-    def get_slider_data():
-        return pd.DataFrame({
-            'first column': list(range(1, 11)),
-            'second column': np.arange(10, 101, 10)
-            })
+    # def get_slider_data():
+    #     return pd.DataFrame({
+    #         'Title': list(range(1, 11)),
+    #         'Year': np.arange(10, 101, 10),
+    #         'Score': np.arange(10, 101, 10)
+    #         })
 
-    df = get_slider_data()
+    # df = get_slider_data()
 
-    option = st.slider('Select the number of rows', 1, 50, 15)
+    option = st.slider('Select the number of rows', 1, 50, 5)
+    print(option)
 
-    filtered_df = df[df['first column'] % option == 0]
-
-    st.write(filtered_df)
+    #filtered_df = data[data['original_title'] % option == 0]
+    filtered_df = st.table(data[['original_title', 'year']].head(option))
     
 else:
     st.write('◀️')
